@@ -1,7 +1,8 @@
 local jwt = require "resty.jwt"
 
-local secret = os.getenv("JWT_SECRET")
-local auth = ngx.var.http_authorization
+-- local secret = os.getenv("JWT_SECRET")
+local secret = "your-secret-key"
+local token = ngx.var.http_authorization
 
 if not secret then
     ngx.status = 500
@@ -9,16 +10,9 @@ if not secret then
     return ngx.exit(500)
 end
 
-if not auth then
-    ngx.status = 401
-    ngx.say("Missing token")
-    return ngx.exit(401)
-end
-
-local _, _, token = string.find(auth, "Bearer%s+(.+)")
 if not token then
     ngx.status = 401
-    ngx.say("Malformed token")
+    ngx.say("Missing token")
     return ngx.exit(401)
 end
 
