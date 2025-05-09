@@ -13,17 +13,17 @@ services:
     networks:
       - vnuid_network
   
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: rabbitmq
-    ports:
-      - "5672:5672"  # Cổng AMQP cho Celery
-      - "15672:15672"  # Cổng Web UI quản lý RabbitMQ
-    environment:
-      RABBITMQ_DEFAULT_USER: user
-      RABBITMQ_DEFAULT_PASS: password
-    networks:
-    - vnuid_network
+  # rabbitmq:
+  #   image: rabbitmq:3-management-alpine
+  #   container_name: rabbitmq
+  #   ports:
+  #     - "5672:5672"  # Cổng AMQP cho Celery
+  #     - "15672:15672"  # Cổng Web UI quản lý RabbitMQ
+  #   environment:
+  #     RABBITMQ_DEFAULT_USER: user
+  #     RABBITMQ_DEFAULT_PASS: password
+  #   networks:
+  #   - vnuid_network
 
   redis:
     image: redis:7-alpine
@@ -37,50 +37,55 @@ services:
   vnuid_identity: 
     image: vnuid-identity:latest
     container_name: vnuid-identity
-    ports:
-      - "3333:3333"
     environment:
       DATABASE_URL: postgres://examuser:exam1234@postgres:5432/vnuid?sslmode=disable
+      GOOGLE_CLIENT_ID: 842014203560-5h2ec7sni2ag0v1u8v3gm4hn851qo8ur.apps.googleusercontent.com
+      JWT_TOKEN: your-secret-key
+      JWT_TOKEN_2FA: your-secret-key
+      RD_HOST: redis://redis:6379
+      RD_DB: 1
+      PORT: 4444
     networks:
     - vnuid_network
     depends_on:
       - postgres
+      - redis
 
-  vnuid_management: 
-    image: vnuid-identity:latest
-    container_name: vnuid-identity
-    ports:
-      - "3333:3333"
-    environment:
-      DATABASE_URL: postgres://examuser:exam1234@postgres:5432/vnuid?sslmode=disable
-    networks:
-    - vnuid_network
-    depends_on:
-      - postgres
+  # vnuid_management: 
+  #   image: vnuid-identity:latest
+  #   container_name: vnuid-identity
+  #   ports:
+  #     - "3333:3333"
+  #   environment:
+  #     DATABASE_URL: postgres://examuser:exam1234@postgres:5432/vnuid?sslmode=disable
+  #   networks:
+  #   - vnuid_network
+  #   depends_on:
+  #     - postgres
 
-  vnuid_cdn: 
-    image: vnuid-identity:latest
-    container_name: vnuid-identity
-    ports:
-      - "3333:3333"
-    environment:
-      DATABASE_URL: postgres://examuser:exam1234@postgres:5432/vnuid?sslmode=disable
-    networks:
-    - vnuid_network
-    depends_on:
-      - postgres
+  # vnuid_cdn: 
+  #   image: vnuid-identity:latest
+  #   container_name: vnuid-identity
+  #   ports:
+  #     - "3333:3333"
+  #   environment:
+  #     DATABASE_URL: postgres://examuser:exam1234@postgres:5432/vnuid?sslmode=disable
+  #   networks:
+  #   - vnuid_network
+  #   depends_on:
+  #     - postgres
 
-  vnuid_client: 
-    image: vnuid-identity:latest
-    container_name: vnuid-identity
-    ports:
-      - "3333:3333"
-    environment:
-      DATABASE_URL: postgres://examuser:exam1234@postgres:5432/vnuid?sslmode=disable
-    networks:
-    - vnuid_network
-    depends_on:
-      - postgres
+  # vnuid_client: 
+  #   image: vnuid-identity:latest
+  #   container_name: vnuid-identity
+  #   ports:
+  #     - "3333:3333"
+  #   environment:
+  #     DATABASE_URL: postgres://examuser:exam1234@postgres:5432/vnuid?sslmode=disable
+  #   networks:
+  #   - vnuid_network
+  #   depends_on:
+  #     - postgres
   
   vnuid_gateway:
     image: vnuid-gateway:latest
@@ -89,9 +94,10 @@ services:
       - "1234:80"
     networks:
     - vnuid_network
-    # depends_on:
-      # - postgres
-      #   - vnuid_identity
+    depends_on:
+      - postgres
+      - redis
+      - vnuid_identity
 
 volumes:
   postgres_data:
