@@ -3,7 +3,11 @@ local jwt = require "resty.jwt"
 -- local secret = os.getenv("JWT_SECRET")
 local secret = "your-secret-key"
 local internal_secret = "iNt3rnAl"
-local token = ngx.var.http_authorization
+local token = ngx.var.cookie_token
+
+if not token or token == "" then
+    token = ngx.var.http_authorization
+end
 
 if not secret then
     ngx.status = 500
