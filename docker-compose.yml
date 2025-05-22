@@ -79,17 +79,15 @@ services:
   #   depends_on:
   #     - postgres
 
-  # vnuid_client: 
-  #   image: vnuid-identity:latest
-  #   container_name: vnuid-identity
-  #   ports:
-  #     - "3333:3333"
-  #   environment:
-  #     DATABASE_URL: postgres://examuser:exam1234@postgres:5432/vnuid?sslmode=disable
-  #   networks:
-  #   - vnuid_network
-  #   depends_on:
-  #     - postgres
+  vnuid_client: 
+    image: 19122002/vnuid-client:latest
+    container_name: vnuid-client
+    ports:
+      - "4000:4000"
+    networks:
+    - vnuid_network
+    depends_on:
+      - vnuid_gateway
   
   vnuid_gateway:
     image: 19122002/vnuid-gateway:latest
@@ -102,6 +100,7 @@ services:
       - postgres
       - redis
       - vnuid_identity
+      - vnuid_management
 
 volumes:
   postgres_data:
