@@ -35,7 +35,7 @@ services:
     - vnuid_network
 
   vnuid_identity: 
-    image: vnuid-identity:latest
+    image: 19122002/vnuid-identity:latest
     container_name: vnuid-identity
     environment:
       DATABASE_URL: postgres://examuser:exam1234@postgres:5432/vnuid?sslmode=disable
@@ -51,17 +51,21 @@ services:
       - postgres
       - redis
 
-  # vnuid_management: 
-  #   image: vnuid-identity:latest
-  #   container_name: vnuid-identity
-  #   ports:
-  #     - "3333:3333"
-  #   environment:
-  #     DATABASE_URL: postgres://examuser:exam1234@postgres:5432/vnuid?sslmode=disable
-  #   networks:
-  #   - vnuid_network
-  #   depends_on:
-  #     - postgres
+  vnuid_management: 
+    image: 19122002/vnuid-management:latest
+    container_name: vnuid-management
+    ports:
+      - "3000"
+    environment:
+      DATABASE_URL: postgres://examuser:exam1234@postgres:5432/vnuid?sslmode=disable
+      REDIS_URL: redis://redis:6379
+      AMQP: amqp://localhost
+      INTERNAL_KEY: iNt3rnAl
+    networks:
+    - vnuid_network
+    depends_on:
+      - postgres
+      - redis
 
   # vnuid_cdn: 
   #   image: vnuid-identity:latest
@@ -88,7 +92,7 @@ services:
   #     - postgres
   
   vnuid_gateway:
-    image: vnuid-gateway:latest
+    image: 19122002/vnuid-gateway:latest
     container_name: vnuid-gateway
     ports:
       - "1234:80"
